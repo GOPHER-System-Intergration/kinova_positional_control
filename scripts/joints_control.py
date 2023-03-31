@@ -7,15 +7,15 @@ import rospy
 import math
 
 from std_msgs.msg import (Float64, Bool)
-from sensor_msgs.msg import JointState
+from sensor_msgs.msg import (JointState)
 
 from kortex_driver.msg import (
     Base_JointSpeeds,
     JointSpeed,
     JointAngles,
 )
-from kortex_driver.srv import Stop
-from kinova_positional_control.srv import PidVelocityLimit
+from kortex_driver.srv import (Stop)
+from kinova_positional_control.srv import (PidVelocityLimit)
 
 
 class KinovaJointsControl:
@@ -33,20 +33,20 @@ class KinovaJointsControl:
         
         """
 
-        # Public constants
+        # Public constants:
         self.ROBOT_NAME = name
         self.MAX_SPEEDS = max_speeds  # Rad/s
         self.CONTINOUS_JOINTS_INDICES = continous_joints_indices
         self.JOINTS_NUMBER = 7
 
-        # Private constants
+        # Private constants:
 
-        # Public variables
+        # Public variables:
         self.is_initialized = False
         self.velocity_fraction_limit = 1.0
         self.motion_finished_threshold = 0.01
 
-        # Private variables
+        # Private variables:
         # Absolute joint positions at the moment of setting a new goal. Relative
         # current joint positions are relative to these positions
         self.__start_absolute_positions = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
@@ -61,20 +61,20 @@ class KinovaJointsControl:
         rospy.init_node(f'{self.ROBOT_NAME}_joints_control', anonymous=True)
         rospy.on_shutdown(self.__node_shutdown)
 
-        # Service provider
+        # Service provider:
         rospy.Service(
             'pid_vel_limit',
             PidVelocityLimit,
             self.__pid_velocity_limit_handler,
         )
 
-        # Service subscriber
+        # Service subscriber:
         self.__stop_arm_srv = rospy.ServiceProxy(
             'my_gen3/base/stop',
             Stop,
         )
 
-        # Topic publisher
+        # Topic publisher:
         self.__joint_velocity = rospy.Publisher(
             f'{self.ROBOT_NAME}/in/joint_velocity',
             Base_JointSpeeds,
@@ -159,7 +159,7 @@ class KinovaJointsControl:
             queue_size=1,
         )
 
-        # Topic subscriber
+        # Topic subscriber:
         rospy.Subscriber(
             f'{self.ROBOT_NAME}/base_feedback/joint_state',
             JointState,
